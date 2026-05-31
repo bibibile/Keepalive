@@ -1558,7 +1558,7 @@ add_socks5_inbound() {
         | awk -F\" '{c="";i="";for(x=1;x<=NF;x++){if($x=="country_code")c=$(x+2);if($x=="isp")i=$(x+2)};if(c&&i)print c"-"i}' \
         | sed 's/ /_/g' || echo "Socks5")
 
-    local url_line="socks://$(printf '%s' "${sk_user}:${sk_pass}" | base64 -w0)@${server_ip}:${sk_port}#${isp}"
+    local url_line="socks://${sk_user}:${sk_pass}@${server_ip}:${sk_port}#${isp}"
 
     echo "" >> "${client_dir}"
     echo "${url_line}" >> "${client_dir}"
