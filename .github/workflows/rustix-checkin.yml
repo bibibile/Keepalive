@@ -18,13 +18,17 @@ concurrency:
 
 jobs:
   rustix-alive:
-    # workflow_dispatch 始终执行；repository_dispatch 仅在 DOWN（status 含 Down）时执行
-    # 没有 uptime 可删除 if 条件
+    # workflow_dispatch 始终执行；repository_dispatch 仅 status 含 Down 时执行
     if: github.event_name != 'repository_dispatch' || contains(github.event.client_payload.status, 'Down')
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
+      - name: 🐛 调试 - 打印收到的 client_payload
+        run: |
+          echo "event_name: ${{ github.event_name }}"
+          echo 'client_payload: ${{ toJSON(github.event.client_payload) }}'
+      
       - name: 检出代码
         uses: actions/checkout@v4
 
