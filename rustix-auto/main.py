@@ -281,16 +281,28 @@ def start_server(page: Page, console_lines: list) -> str:
     start_btn, sel, txt = find_button_by_text(page, [
         "Start",
         "Запустить",
+        "Включить",    # [新增] 俄文：开启 (另一种常见翻译)
         "Power On",
         "Boot",
     ])
+    
+    # ======= 👇 新增：文字匹配失效时的 CSS 兜底方案 👇 =======
+    if not start_btn:
+        start_btn, sel = find_first_visible(page, [
+            'button[class*="start" i]',
+            'button[class*="play" i]',
+            'button[class*="success" i]' # 绿色按钮常带有 success 类名
+        ])
+        txt = "Start(CSS fallback)"
+    # =======================================================
+
     if not start_btn:
         page.screenshot(path=f"debug_start_{int(time.time())}.png")
         logger.error("未找到 start 按钮")
         return "no_start"
 
     clickable = is_clickable(start_btn)
-    logger.info(f"start 按钮可点击状态: {clickable}")
+    logger.info(f"start 按钮可点击状态: {clickable} (当前匹配到的文本/选择器: {txt})")
 
     if not clickable:
         logger.info("start 按钮不可点击 -> 服务器可能已在线，跳过启动")
@@ -387,6 +399,14 @@ def process_account(account: dict, playwright, headless: bool = True) -> dict:
             locale="en-US",
         )
         page = context.new_page()
+
+        # ======= 👇 新增核心修复：在所有操作前，强行注入清理本地缓存的脚本 👇 =======
+        # 彻底解决 "Failed to retrieve persisted value from store" 导致的页面渲染崩溃
+        page.add_init_script("""
+            window.localStorage.clear();
+            window.sessionStorage.clear();
+        """)
+        # ==============================================================================
 
         # 收集控制台消息
         console_lines = []
