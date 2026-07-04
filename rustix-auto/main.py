@@ -281,7 +281,8 @@ def start_server(page: Page, console_lines: list) -> str:
     start_btn, sel, txt = find_button_by_text(page, [
         "Start",
         "Запустить",
-        "Включить",    # [新增] 俄文：开启 (另一种常见翻译)
+        "Включить",
+        "Старт",       # <--- [新增] 截图确定的最终匹配词
         "Power On",
         "Boot",
     ])
@@ -352,6 +353,7 @@ def check_stop_button(page: Page) -> str:
     stop_btn, sel, txt = find_button_by_text(page, [
         "Stop",            # 英语
         "Остановить",      # 俄语
+        "Стоп",            # <--- [新增] 截图确定的最终匹配词
         "Power Off",
         "Shut down",
         "Shutdown",
